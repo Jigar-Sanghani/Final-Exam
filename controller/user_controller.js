@@ -23,7 +23,17 @@ const Signup = async (req, res) => {
                 username: user.username,
             }
             let token = await jwt.sign(data, "private-key");
-            
+            let otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
+            otps.set(email, otp);
+
+            let html = `<div> 
+               <h1>Hello ${user.username}</h1>
+               <p>Click the link below to verify your account:</p>
+               <a href="http://localhost:8090/users/verify/${token}/${otp}">Verify Account</a>
+               <h1>OTP: ${otp}</h1>
+            </div>`;
+            await sendMail(email, "Verify your account", html);
+
             return res.status(201).json({
                 msg: "User Successfull Created !!", token: token,
                 isVerified: user.isVerified
@@ -72,6 +82,11 @@ const Login = async (req, res) => {
     catch (error) {
         res.status(500).json({ msg: "Error !!", error: error.message });
     }
+};
+
+const GetAllUsers = async (req, res) => {
+    let data = await User.find();
+    res.status(200).json(data);
 };
 
 const GetUser = async (req, res) => {
@@ -142,4 +157,4 @@ const verifyAdmin = async (req, res) => {
     }
 };
 
-module.exports = { Signup, Login, GetUser, deleteuser, getAdmins, verifyAdmin, VerifyUser };
+module.exports = { Signup, Login, GetUser, deleteuser, getAdmins, GetAllUsers, verifyAdmin, VerifyUser };

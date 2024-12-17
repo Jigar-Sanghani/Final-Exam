@@ -1,16 +1,22 @@
 const express = require("express");
+require("dotenv").config()
+const cors = require('cors');
+
 const dbconnect = require("./config/db");
 const { userRouter } = require("./routes/user_routes");
 const { restaurantrouter } = require("./routes/Restaurant_routes");
 const { foodrouter } = require("./routes/food_route");
-const app = express();  
 
+const app = express();  
 app.use(express.json());
+app.use(express.urlencoded({extended:true}))
+app.use(cors());
 
 
 app.use("/users", userRouter)
 app.use("/restaurant", restaurantrouter)
 app.use("/food",foodrouter)
+
 app.get("/", (req, res) => {
     res.status(200).json({ msg: "Final-Project" });
 });
